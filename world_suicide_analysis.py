@@ -47,6 +47,9 @@ suic_red['per_capita'] = suic_red.suicides_no/suic_red.population
 # merge data into one frame
 whole_df = pd.merge(suic_red,happy,on=['Country','year'])  
 
+#filter for countries with both happiness and suicide data in 2015 and 2016
+whole_df_2 = whole_df.groupby("Country").filter(lambda x: x.Country.size == 2)
+
 """
 TO DO:
     
