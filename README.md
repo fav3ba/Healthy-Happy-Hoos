@@ -5,5 +5,5 @@ Investigating location based suicide rates when compared to the World Happiness 
 World Happiness Data Source
 https://www.kaggle.com/unsdsn/world-happiness/
 
-Suicide WHO
+Suicide WHO Source
 https://www.kaggle.com/szamil/who-suicide-statistics
