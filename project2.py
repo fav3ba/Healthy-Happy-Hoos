@@ -1,9 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@author: Alice Bogdan (ucn3qn), Kin Girma (zcu4kb), Anh Nguyen (hzn3kf), 
-Frank Vasquez (fav3ba)
+Created on Tue Jul 20 13:33:49 2021
+
+@author: alicebogdan
 """
+
+'''
+For reference:
+    world: contains country/continent info important for mapping
+    suic_red: suicide data without sex and age columns. No region, country, and continent (see suicides)
+    suicides: contains suicide info with region, country, and continent without nan values
+    happy: contains happiness data for years 2015 and 2016 (contains region, country, and continent info)
+    happy_all: same as happy but also contains years 2017-2019
+    happy_sad: combination of happy_all and suic_red
+    whole_world: copy of happy_sad
+    part_world: contains only countries that had data for both 2015 and 2016
+'''
 
 import pandas as pd
 import numpy as np
@@ -41,18 +54,31 @@ world['Country'] = world['Country'].replace({'Czechia': 'Czech Republic'})
 #remove population and gdp columns
 world = world.drop(['pop_est','gdp_md_est'], axis = 1)
 
+#create region df
+dfregion = df2015[['Country','Region']]
+dfregion = dfregion.replace({'Central African Republic':'Central African Rep.',
+                               'Congo (Brazzaville)':'Congo',
+                               'Bosnia and Herzegovina':'Bosnia and Herz.',
+                               'Congo (Kinshasa)':'Dem. Rep. Congo',
+                               'Dominican Republic':'Dominican Rep.',
+                               'North Cyprus':'N. Cyprus',
+                               'Palestinian Territories':'Palestine',
+                               'Sudan':'S. Sudan',
+                               'Somaliland region':'Somaliland',
+                               'United States':'United States of America'})
+
 #clean happiness data
 # add year column to happiness data
 df2015['year'] = 2015
-print(len(df2015))
+#print(len(df2015))
 df2016['year'] = 2016
-print(len(df2016))
+#print(len(df2016))
 df2017['year'] = 2017
-print(len(df2017))
+#print(len(df2017))
 df2018['year'] = 2018
-print(len(df2018))
+#print(len(df2018))
 df2019['year'] = 2019
-print(len(df2019))
+#print(len(df2019))
 
 #remove inconsistent columns
 df2015 = df2015.drop(['Standard Error', "Dystopia Residual","Region"], axis=1)
@@ -87,15 +113,61 @@ happy = df2015.append(df2016)
 print(len(happy))
 sorted(happy)
 
+#rename countries
+happy = happy.replace({'Central African Republic':'Central African Rep.',
+                               'Congo (Brazzaville)':'Congo',
+                               'Bosnia and Herzegovina':'Bosnia and Herz.',
+                               'Congo (Kinshasa)':'Dem. Rep. Congo',
+                               'Dominican Republic':'Dominican Rep.',
+                               'North Cyprus':'N. Cyprus',
+                               'Palestinian Territories':'Palestine',
+                               'Sudan':'S. Sudan',
+                               'Somaliland region':'Somaliland',
+                               'Somaliland Region':'Somaliland',
+                               'United States':'United States of America'})
+
 #combine all happiness data (2015-2019)
 happy_all = happy.append(df2017)
 happy_all = happy_all.append(df2018)
 happy_all = happy_all.append(df2019)
 
+#rename countries
+happy_all = happy_all.replace({'Central African Republic':'Central African Rep.',
+                               'Congo (Brazzaville)':'Congo',
+                               'Bosnia and Herzegovina':'Bosnia and Herz.',
+                               'Congo (Kinshasa)':'Dem. Rep. Congo',
+                               'Dominican Republic':'Dominican Rep.',
+                               'North Cyprus':'N. Cyprus',
+                               'Palestinian Territories':'Palestine',
+                               'Sudan':'S. Sudan',
+                               'Somaliland region':'Somaliland',
+                               'Somaliland Region':'Somaliland',
+                               'United States':'United States of America'})
+
+#add region and continents to happy dfs
+happy = pd.merge(happy, dfregion, how = 'left', on = 'Country')
+happy = pd.merge(happy, world, how ='left', on = 'Country')
+
+happy_all = pd.merge(happy_all, dfregion, how = 'left', on = 'Country')
+happy_all = pd.merge(happy_all, world, how ='left', on = 'Country')
+
+sorted(dfregion['Region'].unique())
+
 #rename for agreement across dataframes (world df used United States of America)
-happy_all = happy_all.replace({'United States':'United States of America'})
+#happy_all = happy_all.replace({'United States':'United States of America'})
 
 #clean suicide data
+#rename countries to match world dataframe
+dfsuicide = dfsuicide.replace({'Russian Federation':'Russia',
+                               'Serbia ':'Serbia',
+                               'Bosnia and Herzegovina':'Bosnia and Herz.',
+                               'Iran (Islamic Rep of)':'Iran',
+                               'Republic of Korea':'South Korea',
+                               'Republic of Moldova':'Moldova',
+                               'TFYR Macedonia':'Macedonia',
+                               'Venezuela (Bolivarian Republic of)':'Venezuela',
+                               'Brunei Darussalam':'Brunei'})
+
 #drop nan values
 suic_fil = dfsuicide.dropna()
 
@@ -106,18 +178,30 @@ suic_fil = suic_fil.rename(columns = {'country':"Country"})
 suic_fil = suic_fil.drop(['sex','age'], axis=1)
 # sum population and suicides per country per year
 suic_red = suic_fil.groupby(['Country', 'year'])['suicides_no','population'].agg('sum')
+#reset so Country and year aren't the index
+suic_red = suic_red.reset_index()
 
 # add per capita column
 suic_red['per_capita'] = suic_red.suicides_no/suic_red.population
+suic_red['Suicides per 100K'] = round(suic_red.per_capita*100000,3)
+
+#add countries to suicides 
+suicides = pd.merge(suic_red, dfregion, how = 'left', on = 'Country')
+suicides = pd.merge(suicides, world, how = 'left', on = 'Country')
+
+#drop nan values
+suicides = suicides.dropna()
 
 #merge suicide and happy dataframes together
 happy_sad = pd.merge(suic_red, happy, on=['Country','year'])
 
 #merge world and happy_sad dataframes together
-whole_world = world.merge(happy_sad, on ='Country')
+whole_world = happy_sad.copy()
+whole_world = whole_world.dropna()
 
 #whole_world df filtered for countries that have entries for 2015 and 2016
 part_world = whole_world.groupby('Country').filter(lambda x: x.Country.size == 2)
+part_world = part_world.dropna()
 sorted(part_world.Country.unique())
 
 #outer joing for world and happy_sad dafaframes
