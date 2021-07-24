@@ -9,6 +9,7 @@ Created on Tue Jul 20 13:33:49 2021
 '''
 For reference:
     world: contains country/continent info important for mapping
+    dfregion: contains 2 columns with countries and regions extracted from df2015
     suic_red: suicide data without sex and age columns. No region, country, and continent (see suicides)
     suicides: contains suicide info with region, country, and continent without nan values
     happy: contains happiness data for years 2015 and 2016 (contains region, country, and continent info)
