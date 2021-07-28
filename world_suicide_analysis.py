@@ -7,6 +7,7 @@ Frank Vasquez (fav3ba)
 
 """
 import pandas as pd
+import DecisionTree
 
 
 # read in spreadsheets:
@@ -49,6 +50,35 @@ whole_df = pd.merge(suic_red,happy,on=['Country','year'])
 
 #filter for countries with both happiness and suicide data in 2015 and 2016
 whole_df_2 = whole_df.groupby("Country").filter(lambda x: x.Country.size == 2)
+
+whole_df['per_100k'] = whole_df['per_capita']*100000
+
+regions = list(whole_df['Region'].unique())
+
+# make region values numerical for training
+region_factor = []
+for i in range(0, len(whole_df)):
+    reg = whole_df.iloc[i,5]
+    factor = [i for i in range(len(regions)) if regions[i] == reg]
+    region_factor.append(factor[0])
+
+whole_df['region_factor'] = region_factor
+
+#create buckets (0-10, 10-20, 20-30, >30)
+buckets = []
+for i in range(0, len(whole_df)):
+    val = whole_df.iloc[i,15]
+    if(val < 10): buckets.append('0-10')
+    elif (val < 20 and val >= 10): buckets.append('10-20')
+    elif(val < 30 and val >= 20): buckets.append('20-30')
+    elif (val >= 30): buckets.append('30+')
+    
+whole_df['buckets'] = buckets
+
+# input data and desired tree depth
+model = DecisionTree.build_model(whole_df, 10)
+
+# visualization
 
 """
 TO DO:
