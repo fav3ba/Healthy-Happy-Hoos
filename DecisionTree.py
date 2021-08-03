@@ -36,6 +36,8 @@ def build_model(df, depth):
     y = df.loc[:,pred_col].values
     
     # randomly split data for model training and testing
+    # default size splits 75/25
+    # setting random state will allow for reproducible results
     x_train, x_test, y_train, y_test = train_test_split(x, y, random_state = 0)
     
     # building model
