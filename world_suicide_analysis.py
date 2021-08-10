@@ -9,7 +9,6 @@ Frank Vasquez (fav3ba)
 import pandas as pd
 import DecisionTree
 
-
 # read in spreadsheets:
 path = "World Happiness Report 2015-2016/"
 df2015 = pd.read_csv(path+"2015.csv")
@@ -77,32 +76,6 @@ whole_df['buckets'] = buckets
 
 # input data and desired tree depth
 model = DecisionTree.build_model(whole_df, 10)
-
-# visualization
-
-"""
-TO DO:
-    
-process/combine sheets (Finished):
-1. Eliminate irrelevant years
-2. Join dataframes on country and year
-3. Merge age buckets or keep separate?
-    a. Merging would allow for simpler country to country comparison
-    b. Leaving separate would give us more granular data, could see trends that
-       might otherwise be masked.
-
-Analysis:
-Need to decide what exactly we want to do here
-Start with playing with data and seeing if there are any obvious trends?
-Maybe some visualizations would be useful as a start
-Response variable (y): suicides
-Predictor variables (xi): World Happiness Survey categories
- 
-
-Visualizations:
-might end up being integrated throughout the rest of our code base
-could make functions for visualizations that are called elsewhere?
-"""
 
 
 
