@@ -12,4 +12,5 @@ Python Files:
 1.
 2.
 3. Linear_Regression_GPD_Happiness_Anh.py - contains linear regression code and Happiness Score vs GDP code
-4
+4  Project_Preprocessing_SuicidesAnalysis_HappinessVsSuicides.py - data preprocessing, Suicides analysis, and suicides vs happiness analysis. Includes visualizations.
+5.
