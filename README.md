@@ -7,3 +7,9 @@ https://www.kaggle.com/unsdsn/world-happiness/
 
 Suicide WHO Source
 https://www.kaggle.com/szamil/who-suicide-statistics
+
+Python Files:
+1.
+2.
+3. Linear_Regression_GPD_Happiness_Anh.py - contains linear regression code and Happiness Score vs GDP code
+4
