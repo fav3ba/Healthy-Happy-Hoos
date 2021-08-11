@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul 20 13:33:49 2021
-
 @author: alicebogdan
 """
 
@@ -122,8 +120,8 @@ df2019 = df2019.rename(columns = {'Country or region':"Country",
 
 # combine happiness data (2015-2016)
 happy = df2015.append(df2016)
-print(len(happy))
-sorted(happy)
+#print(len(happy))
+#sorted(happy)
 
 #rename countries
 happy = happy.replace({'Central African Republic':'Central African Rep.',
@@ -314,7 +312,7 @@ low_10_suic_count = suic_average.sort_values(by = 'Country_count', ascending= Fa
 
 ############################### USSR ##############################################
 #filter for USSR countries
-USSR = ['Russia', 'Ukraine', 'Georgia', 'Belorussia', 'Uzbekistan', 'Armenia', 'Azerbaijan', 'Kazakhstan', 'Kyrgyzstan', 'Moldova', 'Turkmenistan', 'Tajikistan', 'Latvia', 'Lithuania', 'Estonia']
+USSR = ['Russia', 'Ukraine', 'Georgia', 'Belarus', 'Uzbekistan', 'Armenia', 'Azerbaijan', 'Kazakhstan', 'Kyrgyzstan', 'Moldova', 'Turkmenistan', 'Tajikistan', 'Latvia', 'Lithuania', 'Estonia']
 USSR_suic =suic.copy()
 #filter for USSR countries only
 USSR_suic = USSR_suic[USSR_suic['Country'].isin(USSR)]
@@ -482,6 +480,20 @@ fig = px.scatter(whole_world_avg, x="Happiness Score", y="Suicides per 100K",
                  size="gdp_md_est", color="Region", hover_name="Country",
                  log_x=True, size_max=55)
 fig.show()
+
+#map of average happiness scores from 2015-2019
+fig1 = px.choropleth(happy_all_average, locations="Country_Code",
+                    color="Happiness Score", # lifeExp is a column of gapminder
+                    hover_name= 'Country', # column to add to hover information
+                    color_continuous_scale=px.colors.sequential.Greens_r)
+fig1.show()
+
+#map of average happiness scores from 2015-2019
+fig2 = px.choropleth(suic_average, locations="Country_Code",
+                    color="Suicides per 100K", # lifeExp is a column of gapminder
+                    hover_name= 'Country', # column to add to hover information
+                    color_continuous_scale=px.colors.sequential.Greens)
+fig2.show()
 
 ##############################################################################
 #bubble graphs (won't work in Spyder but will work in jupyter notebook)
